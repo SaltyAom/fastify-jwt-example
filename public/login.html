@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Login</title>
+        <meta chartset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script>
+            fetch('/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Cache-Control': 'no-cache'
+                }
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.success) window.location.pathname = '/'
+                })
+
+            document.addEventListener('DOMContentLoaded', () => {
+                document
+                    .getElementById('form')
+                    .addEventListener('submit', (event) => {
+                        event.preventDefault()
+
+                        let username = event.target.username.value,
+                            password = event.target.password.value
+
+                        if (!username || !password) return
+
+                        fetch('/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                username,
+                                password
+                            })
+                        })
+                            .then((res) => res.json())
+                            .then((data) => {
+                                if (data.success)
+                                    return (window.location.pathname = '/')
+
+                                document.getElementById(
+                                    'notice'
+                                ).style.display = 'block'
+                            })
+                    })
+            })
+        </script>
+    </head>
+    <body>
+        <form id="form" method="POST" action="/auth">
+            <input
+                type="text"
+                name="username"
+                placeholder="username"
+                required
+            />
+            <input
+                type="password"
+                name="password"
+                placeholder="password"
+                required
+            />
+            <button>Login</button>
+        </form>
+        <p id="notice" style="display: none; color: red;">
+            Wrong username or password
+        </p>
+    </body>
+</html>

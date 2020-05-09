@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Profile</title>
+        <meta chartset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script>
+            fetch('/api/profile', {
+                method: 'POST'
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (!data.success)
+                        return (window.location.pathname = '/login')
+
+                    let updatePage = () => {
+                        let { name, favorite } = data.payload.profile
+
+                        document.getElementById('username').innerText = name
+                        document.getElementById('favorite').innerText = favorite
+
+                        document
+                            .getElementById('logout')
+                            .addEventListener('click', () => {
+                                fetch('/logout').then(() => {
+                                    window.location.pathname = '/login'
+                                })
+                            })
+
+                        fetch('/api/refresh', {
+                            method: 'POST',
+                            headers: {
+                                'Cache-Control': 'no-cache'
+                            }
+                        })
+                    }
+
+                    if (
+                        document.readyState === 'complete' ||
+                        document.readyState === 'loaded' ||
+                        document.readyState === 'interactive'
+                    )
+                        return updatePage()
+
+                    return document.addEventListener('DOMContentLoaded', () =>
+                        updatePage()
+                    )
+                })
+        </script>
+    </head>
+    <body>
+        <h3>Username: <span id="username">Fetching...</span></h3>
+        <h3>Favorite: <span id="favorite">Fetching....</span></h3>
+        <button id="logout">Logout</button>
+    </body>
+</html>
