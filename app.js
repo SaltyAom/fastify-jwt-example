@@ -1,14 +1,14 @@
-const fastify = require('fastify')(),
+const app = require('fastify')(),
     path = require('path')
 
 require('dotenv').config()
 
-fastify
+app
     .register(require('fastify-helmet'))
-    .register(require('fastify-rate-limit'), {
-        max: 40,
-        timeWindow: '30 minute'
-    })
+    // .register(require('fastify-rate-limit'), {
+    //     max: 40,
+    //     timeWindow: '30 minute'
+    // })
     .register(require('fastify-compress'))
     .register(require('fastify-static'), {
         root: path.join(__dirname, 'public'),
@@ -22,4 +22,17 @@ fastify
         secret: process.env.cookie_secret
     })
 
-module.exports = fastify
+const run = async (app) => {
+    try {
+        await app.listen(3000)
+        console.log("Listening at http://localhost:3000")
+    } catch(error) {
+        console.warn(error)
+        process.exit(0)
+    }
+}
+
+module.exports = {
+    app,
+    run
+}

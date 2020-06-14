@@ -7,7 +7,7 @@ const store = [
     {
         name: 'SaltyAom',
         password: encode('12345678'), // This actually should be enocded value.
-        favorite: 'Salmon'
+        favorite: 'Salmon' // Other public profile
     }
 ]
 

@@ -1,21 +1,23 @@
-const fastify = require('./fastify'),
-    staticCommon = require('./route/static/common'),
+const cpus = require('os').cpus().length,
+    cluster = require('cluster')
+
+const { app, run } = require('./app')
+
+const staticCommon = require('./route/static/common'),
     { loginAuth, logout } = require('./route/auth'),
     { profileAPI, refreshAPI } = require('./route/api')
 
-fastify.register(staticCommon)
+app
+    .register(staticCommon)
+    .register(loginAuth)
+    .register(logout)
 
-fastify.register(loginAuth)
-fastify.register(logout)
+app
+    .register(profileAPI)
+    .register(refreshAPI)
 
-fastify.register(profileAPI)
-fastify.register(refreshAPI)
-
-fastify
-    .listen(3000)
-    .then(() => {
-        console.log('Listening at :3000')
-    })
-    .catch((error) => {
-        console.log(error)
-    })
+if(cluster.isMaster)
+    for(let server = 0; server < cpus; server++)
+        cluster.fork()
+else
+    run(app)
